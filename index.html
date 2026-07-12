@@ -1,0 +1,2115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AssetFlow - Enterprise Asset Management</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* ----- Reset & Base ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f6f9fc;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            border: none;
+            background: none;
+        }
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* ----- Colors ----- */
+        :root {
+            --primary: #2a4b7c;
+            --primary-light: #e8edf5;
+            --primary-dark: #1a3354;
+            --accent: #3b82f6;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+            --radius: 10px;
+        }
+
+        /* ----- Layout ----- */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ----- Sidebar ----- */
+        .sidebar {
+            width: 250px;
+            background: #fff;
+            border-right: 1px solid var(--gray-200);
+            padding: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .sidebar-brand {
+            padding: 0 1.5rem 1.5rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .sidebar-brand i {
+            font-size: 1.6rem;
+            color: var(--accent);
+        }
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+        .sidebar-nav .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 1.5rem;
+            margin: 0.1rem 0.5rem;
+            border-radius: 8px;
+            color: var(--gray-600);
+            font-weight: 500;
+            transition: all 0.15s;
+            font-size: 0.9rem;
+        }
+        .sidebar-nav .nav-item:hover {
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+        .sidebar-nav .nav-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .sidebar-nav .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .sidebar-footer {
+            border-top: 1px solid var(--gray-200);
+            padding: 1rem 1.5rem;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+        .sidebar-footer .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .sidebar-footer .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* ----- Main ----- */
+        .main {
+            flex: 1;
+            min-height: 100vh;
+            background: var(--gray-50);
+        }
+        .topbar {
+            background: #fff;
+            padding: 0.75rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(6px);
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .topbar-left h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+        .topbar-right .notification-bell {
+            position: relative;
+            font-size: 1.2rem;
+            color: var(--gray-600);
+            cursor: pointer;
+        }
+        .topbar-right .notification-bell .badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: var(--danger);
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 20px;
+        }
+        .topbar-right .role-tag {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .page-content {
+            padding: 2rem;
+        }
+
+        /* ----- Cards & Grid ----- */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .kpi-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 1rem 1.2rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--accent);
+        }
+        .kpi-card .kpi-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--gray-500);
+            font-weight: 600;
+        }
+        .kpi-card .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 0.2rem;
+        }
+        .kpi-card.danger {
+            border-left-color: var(--danger);
+        }
+        .kpi-card.warning {
+            border-left-color: var(--warning);
+        }
+        .kpi-card.success {
+            border-left-color: var(--success);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .quick-actions .btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            background: #fff;
+            border: 1px solid var(--gray-200);
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .quick-actions .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .quick-actions .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        .quick-actions .btn-outline {
+            border-color: var(--gray-300);
+        }
+        .quick-actions .btn-outline:hover {
+            background: var(--gray-100);
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .panel-header h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+        .panel-header .subtitle {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            font-weight: 400;
+        }
+
+        /* ----- Tables ----- */
+        .table-wrap {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            padding: 0.6rem 0.8rem;
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-600);
+            border-bottom: 2px solid var(--gray-200);
+        }
+        td {
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        tr:hover td {
+            background: var(--gray-50);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.15rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .status-badge.available {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .status-badge.allocated {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        .status-badge.reserved {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .status-badge.maintenance {
+            background: #fce4ec;
+            color: #b91c1c;
+        }
+        .status-badge.lost {
+            background: #f1f5f9;
+            color: #475569;
+        }
+        .status-badge.retired,
+        .status-badge.disposed {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+        .status-badge.approved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .status-badge.rejected {
+            background: #fce4ec;
+            color: #b91c1c;
+        }
+        .status-badge.completed {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .badge-sm {
+            font-size: 0.7rem;
+            background: var(--gray-200);
+            padding: 0.1rem 0.5rem;
+            border-radius: 12px;
+            color: var(--gray-600);
+        }
+
+        /* ----- Forms ----- */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+            color: var(--gray-700);
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            background: #fff;
+            transition: border 0.15s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-row.three {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        /* ----- Tabs ----- */
+        .tabs {
+            display: flex;
+            gap: 0.25rem;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .tabs .tab {
+            padding: 0.5rem 1.2rem;
+            font-weight: 500;
+            color: var(--gray-500);
+            border-bottom: 2px solid transparent;
+            transition: all 0.15s;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .tabs .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .tabs .tab:hover {
+            color: var(--gray-700);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ----- Modals ----- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            animation: fadeIn 0.2s ease;
+        }
+        .modal {
+            background: #fff;
+            border-radius: var(--radius);
+            max-width: 580px;
+            width: 100%;
+            padding: 1.8rem 2rem;
+            box-shadow: var(--shadow-lg);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+        .modal .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+        .modal .btn-secondary {
+            background: var(--gray-200);
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .modal .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .modal .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        .modal .btn-danger {
+            background: var(--danger);
+            color: #fff;
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.97);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ----- Notifications toast ----- */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 2000;
+            max-width: 380px;
+        }
+        .toast {
+            background: #1e293b;
+            color: #fff;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+        }
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+        .toast i {
+            font-size: 1.1rem;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ----- Misc ----- */
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .gap-1 {
+            gap: 0.5rem;
+        }
+        .mt-2 {
+            margin-top: 1.5rem;
+        }
+        .text-sm {
+            font-size: 0.85rem;
+        }
+        .text-muted {
+            color: var(--gray-500);
+        }
+        .fw-600 {
+            font-weight: 600;
+        }
+        .inline-flex {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .clickable {
+            cursor: pointer;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .text-center {
+            text-align: center;
+        }
+
+        /* Scroll */
+        .sidebar::-webkit-scrollbar,
+        .modal::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb,
+        .modal::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 64px;
+                padding: 0.5rem 0;
+            }
+            .sidebar-brand span,
+            .sidebar-nav .nav-item span,
+            .sidebar-footer .user-info span {
+                display: none;
+            }
+            .sidebar-brand {
+                justify-content: center;
+                padding: 0.5rem;
+                font-size: 1.2rem;
+            }
+            .sidebar-nav .nav-item {
+                justify-content: center;
+                padding: 0.6rem;
+                margin: 0.2rem;
+            }
+            .sidebar-footer .user-info {
+                justify-content: center;
+            }
+            .topbar {
+                padding: 0.5rem 1rem;
+            }
+            .page-content {
+                padding: 1rem;
+            }
+            .form-row,
+            .form-row.three {
+                grid-template-columns: 1fr;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .modal {
+                padding: 1.2rem;
+                margin: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="root"></div>
+
+    <script>
+        // ------------------------------------------------
+        //  SIMPLE STATE & DATA STORE (in-memory)
+        // ------------------------------------------------
+        const Store = {
+            // --- Users ---
+            users: [
+                { id: 'u1', name: 'Admin User', email: 'admin@assetflow.com', password: 'admin123', role: 'admin',
+                    departmentId: null, status: 'Active' },
+                { id: 'u2', name: 'Alice Manager', email: 'alice@assetflow.com', password: 'alice123', role: 'asset_manager',
+                    departmentId: 'd1', status: 'Active' },
+                { id: 'u3', name: 'Bob Head', email: 'bob@assetflow.com', password: 'bob123', role: 'dept_head',
+                    departmentId: 'd1', status: 'Active' },
+                { id: 'u4', name: 'Carol Employee', email: 'carol@assetflow.com', password: 'carol123', role: 'employee',
+                    departmentId: 'd1', status: 'Active' },
+                { id: 'u5', name: 'David Employee', email: 'david@assetflow.com', password: 'david123', role: 'employee',
+                    departmentId: 'd2', status: 'Active' },
+            ],
+            currentUser: null,
+
+            // --- Departments ---
+            departments: [
+                { id: 'd1', name: 'Engineering', parentId: null, headId: 'u3', status: 'Active' },
+                { id: 'd2', name: 'Marketing', parentId: null, headId: null, status: 'Active' },
+                { id: 'd3', name: 'Finance', parentId: null, headId: null, status: 'Active' },
+            ],
+
+            // --- Categories ---
+            categories: [
+                { id: 'c1', name: 'Electronics', customFields: ['warranty_period'] },
+                { id: 'c2', name: 'Furniture', customFields: [] },
+                { id: 'c3', name: 'Vehicles', customFields: ['license_plate'] },
+            ],
+
+            // --- Assets ---
+            assets: [
+                { id: 'a1', name: 'MacBook Pro 16"', categoryId: 'c1', assetTag: 'AF-0001', serialNo: 'SN12345',
+                    acquisitionDate: '2025-01-15', acquisitionCost: 2499, condition: 'Good', location: 'Office A',
+                    status: 'Available', isShared: false, departmentId: null, holderId: null, history: [] },
+                { id: 'a2', name: 'Dell XPS 13', categoryId: 'c1', assetTag: 'AF-0002', serialNo: 'SN67890',
+                    acquisitionDate: '2025-02-10', acquisitionCost: 1899, condition: 'Excellent', location: 'Office B',
+                    status: 'Allocated', isShared: false, departmentId: 'd1', holderId: 'u4', history: [] },
+                { id: 'a3', name: 'Conference Room B2', categoryId: 'c2', assetTag: 'AF-0003', serialNo: 'ROOM-B2',
+                    acquisitionDate: '2024-11-01', acquisitionCost: 0, condition: 'Good', location: '2nd Floor',
+                    status: 'Available', isShared: true, departmentId: null, holderId: null, history: [] },
+                { id: 'a4', name: 'Toyota Camry', categoryId: 'c3', assetTag: 'AF-0004', serialNo: 'VEH-001',
+                    acquisitionDate: '2024-08-20', acquisitionCost: 32000, condition: 'Good', location: 'Parking',
+                    status: 'Reserved', isShared: true, departmentId: null, holderId: null, history: [] },
+                { id: 'a5', name: 'HP LaserJet', categoryId: 'c1', assetTag: 'AF-0005', serialNo: 'PRN-987',
+                    acquisitionDate: '2023-06-10', acquisitionCost: 450, condition: 'Fair', location: 'Office C',
+                    status: 'Under Maintenance', isShared: false, departmentId: 'd2', holderId: 'u5', history: [] },
+            ],
+
+            // --- Bookings ---
+            bookings: [
+                { id: 'b1', assetId: 'a3', bookedBy: 'u4', start: '2026-07-13T09:00', end: '2026-07-13T10:00',
+                    status: 'Upcoming', createdAt: '2026-07-10T10:00' },
+                { id: 'b2', assetId: 'a3', bookedBy: 'u5', start: '2026-07-13T14:00', end: '2026-07-13T15:30',
+                    status: 'Upcoming', createdAt: '2026-07-11T08:30' },
+            ],
+
+            // --- Maintenance ---
+            maintenance: [
+                { id: 'm1', assetId: 'a5', requesterId: 'u5', issue: 'Paper jam frequently', priority: 'High',
+                    status: 'Pending', photo: null, assignedTo: null, createdAt: '2026-07-11T09:00', resolvedAt: null },
+            ],
+
+            // --- Audits ---
+            audits: [
+                { id: 'aud1', name: 'Q3 Engineering Audit', scope: 'd1', dateRange: ['2026-07-01', '2026-07-15'],
+                    auditors: ['u2'], status: 'In Progress', items: [] },
+            ],
+
+            // --- Notifications ---
+            notifications: [
+                { id: 'n1', userId: 'u4', message: 'Asset Dell XPS 13 allocated to you.', type: 'info',
+                read: false, createdAt: '2026-07-10T11:00' },
+                { id: 'n2', userId: 'u4', message: 'Maintenance request for HP LaserJet approved.',
+                type: 'success', read: false, createdAt: '2026-07-11T10:30' },
+                { id: 'n3', userId: 'u5', message: 'Overdue return: HP LaserJet expected 2026-07-09.',
+                type: 'warning', read: false, createdAt: '2026-07-12T08:00' },
+            ],
+
+            // --- Logs ---
+            logs: [],
+
+            // --- Helpers ---
+            nextId(prefix) {
+                const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                let id = prefix || '';
+                for (let i = 0; i < 6; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
+                return id;
+            },
+
+            getDepartment(id) { return this.departments.find(d => d.id === id); },
+            getCategory(id) { return this.categories.find(c => c.id === id); },
+            getUser(id) { return this.users.find(u => u.id === id); },
+            getAsset(id) { return this.assets.find(a => a.id === id); },
+            getBooking(id) { return this.bookings.find(b => b.id === id); },
+            getMaintenance(id) { return this.maintenance.find(m => m.id === id); },
+
+            getRoleLabel(role) {
+                const map = { admin: 'Admin', asset_manager: 'Asset Manager', dept_head: 'Department Head',
+                    employee: 'Employee' };
+                return map[role] || role;
+            },
+
+            getStatusBadge(status) {
+                const cls = {
+                    'Available': 'available',
+                    'Allocated': 'allocated',
+                    'Reserved': 'reserved',
+                    'Under Maintenance': 'maintenance',
+                    'Lost': 'lost',
+                    'Retired': 'retired',
+                    'Disposed': 'disposed',
+                };
+                return cls[status] || 'available';
+            },
+
+            // Notification helpers
+            addNotification(userId, message, type = 'info') {
+                this.notifications.unshift({
+                    id: this.nextId('n'),
+                    userId,
+                    message,
+                    type,
+                    read: false,
+                    createdAt: new Date().toISOString()
+                });
+                // Render toast
+                showToast(message, type);
+            },
+
+            addLog(userId, action) {
+                const user = this.getUser(userId);
+                this.logs.unshift({
+                    id: this.nextId('l'),
+                    userId,
+                    userName: user ? user.name : 'System',
+                    action,
+                    timestamp: new Date().toISOString()
+                });
+            },
+
+            // Find all assets held by a user
+            getAssetsHeldBy(userId) {
+                return this.assets.filter(a => a.holderId === userId && a.status === 'Allocated');
+            },
+
+            // Get department assets
+            getDepartmentAssets(deptId) {
+                return this.assets.filter(a => a.departmentId === deptId);
+            },
+
+            // Asset transitions
+            transitionAsset(assetId, newStatus, note = '') {
+                const asset = this.getAsset(assetId);
+                if (!asset) return null;
+                const oldStatus = asset.status;
+                asset.status = newStatus;
+                asset.history.push({
+                    date: new Date().toISOString(),
+                    from: oldStatus,
+                    to: newStatus,
+                    note
+                });
+                return asset;
+            }
+        };
+
+        // ------------------------------------------------
+        //  TOAST SYSTEM
+        // ------------------------------------------------
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer') || (() => {
+                const c = document.createElement('div');
+                c.id = 'toastContainer';
+                c.className = 'toast-container';
+                document.body.appendChild(c);
+                return c;
+            })();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const iconMap = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-triangle-exclamation',
+                info: 'fa-info-circle' };
+            toast.innerHTML = `<i class="fa-solid ${iconMap[type] || 'fa-info-circle'}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3500);
+        }
+
+        // ------------------------------------------------
+        //  RENDER ENGINE (Virtual DOM like)
+        // ------------------------------------------------
+        let currentPage = 'dashboard';
+        let modalContent = null;
+        let selectedTab = 'departments';
+
+        function render() {
+            const root = document.getElementById('root');
+            if (!Store.currentUser) {
+                root.innerHTML = renderLogin();
+                attachLoginEvents();
+                return;
+            }
+            root.innerHTML = renderApp();
+            attachAppEvents();
+            // After render, show modal if any
+            if (modalContent) {
+                renderModal();
+            }
+        }
+
+        // ----- LOGIN -----
+        function renderLogin() {
+            return `
+            <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e8edf5 0%,#d4dfeb 100%);padding:1rem;">
+              <div style="background:#fff;border-radius:16px;padding:2.5rem;max-width:400px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,0.08);">
+                <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem;">
+                  <i class="fa-solid fa-cubes" style="font-size:2rem;color:var(--accent);"></i>
+                  <span style="font-size:1.8rem;font-weight:700;color:var(--primary);">AssetFlow</span>
+                </div>
+                <h3 style="margin-bottom:0.25rem;">Welcome back</h3>
+                <p style="color:var(--gray-500);font-size:0.9rem;margin-bottom:1.5rem;">Sign in to manage your assets</p>
+                <form id="loginForm">
+                  <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="you@company.com" value="admin@assetflow.com" />
+                  </div>
+                  <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" value="admin123" />
+                  </div>
+                  <button type="submit" style="width:100%;padding:0.7rem;background:var(--primary);color:#fff;border-radius:8px;font-weight:600;font-size:1rem;margin-top:0.5rem;">Sign In</button>
+                </form>
+                <p style="margin-top:1.2rem;font-size:0.85rem;color:var(--gray-500);text-align:center;">
+                  <span class="clickable" id="showSignup" style="color:var(--accent);font-weight:500;">Create an account</span>
+                </p>
+                <div style="margin-top:1rem;font-size:0.75rem;color:var(--gray-400);text-align:center;border-top:1px solid var(--gray-200);padding-top:1rem;">
+                  Demo: admin@assetflow.com / admin123 &bull; alice@assetflow.com / alice123
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        function attachLoginEvents() {
+            const form = document.getElementById('loginForm');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('loginEmail').value.trim();
+                    const password = document.getElementById('loginPassword').value.trim();
+                    const user = Store.users.find(u => u.email === email && u.password === password);
+                    if (user) {
+                        Store.currentUser = user;
+                        Store.addLog(user.id, `Logged in`);
+                        render();
+                    } else {
+                        showToast('Invalid credentials. Try admin@assetflow.com / admin123', 'error');
+                    }
+                });
+            }
+            const signupBtn = document.getElementById('showSignup');
+            if (signupBtn) {
+                signupBtn.addEventListener('click', () => {
+                    showSignupModal();
+                });
+            }
+        }
+
+        function showSignupModal() {
+            modalContent = {
+                title: 'Create Account',
+                body: `
+              <div class="form-group"><label>Full Name</label><input id="signupName" placeholder="John Doe" /></div>
+              <div class="form-group"><label>Email</label><input id="signupEmail" placeholder="john@company.com" /></div>
+              <div class="form-group"><label>Password</label><input id="signupPassword" type="password" placeholder="••••••••" /></div>
+              <div class="form-group"><label>Department</label>
+                <select id="signupDept">
+                  ${Store.departments.filter(d=>d.status==='Active').map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}
+                </select>
+              </div>
+              <p class="text-sm text-muted">Accounts are created as Employee. Admins promote roles later.</p>
+            `,
+                actions: `
+              <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+              <button class="btn-primary" id="confirmSignup">Create Account</button>
+            `
+            };
+            render();
+            document.getElementById('confirmSignup').addEventListener('click', () => {
+                const name = document.getElementById('signupName').value.trim();
+                const email = document.getElementById('signupEmail').value.trim();
+                const password = document.getElementById('signupPassword').value.trim();
+                const deptId = document.getElementById('signupDept').value;
+                if (!name || !email || !password) { showToast('All fields required', 'error'); return; }
+                if (Store.users.find(u => u.email === email)) { showToast('Email already registered', 'error'); return; }
+                const newUser = {
+                    id: Store.nextId('u'),
+                    name,
+                    email,
+                    password,
+                    role: 'employee',
+                    departmentId: deptId,
+                    status: 'Active'
+                };
+                Store.users.push(newUser);
+                Store.addLog(newUser.id, `Account created (Employee)`);
+                closeModal();
+                showToast('Account created! Please log in.', 'success');
+                render();
+            });
+        }
+
+        // ----- APP LAYOUT -----
+        function renderApp() {
+            const user = Store.currentUser;
+            const role = user.role;
+            const isAdmin = role === 'admin';
+            const isAssetMgr = role === 'asset_manager';
+            const isDeptHead = role === 'dept_head';
+
+            // Navigation items based on role
+            const navItems = [
+                { id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge-high' },
+                { id: 'org', label: 'Organization', icon: 'fa-building', admin: true },
+                { id: 'assets', label: 'Assets', icon: 'fa-boxes-stacked' },
+                { id: 'allocations', label: 'Allocations', icon: 'fa-arrows-rotate' },
+                { id: 'bookings', label: 'Bookings', icon: 'fa-calendar-check' },
+                { id: 'maintenance', label: 'Maintenance', icon: 'fa-wrench' },
+                { id: 'audits', label: 'Audits', icon: 'fa-clipboard-check' },
+                { id: 'reports', label: 'Reports', icon: 'fa-chart-simple' },
+                { id: 'logs', label: 'Activity Logs', icon: 'fa-clock-rotate-left' },
+            ];
+
+            const filteredNav = navItems.filter(item => {
+                if (item.admin && !isAdmin) return false;
+                return true;
+            });
+
+            return `
+            <div class="app">
+              <!-- Sidebar -->
+              <aside class="sidebar">
+                <div class="sidebar-brand">
+                  <i class="fa-solid fa-cubes"></i>
+                  <span>AssetFlow</span>
+                </div>
+                <nav class="sidebar-nav">
+                  ${filteredNav.map(item => `
+                    <div class="nav-item ${currentPage === item.id ? 'active' : ''}" data-page="${item.id}">
+                      <i class="fa-solid ${item.icon}"></i>
+                      <span>${item.label}</span>
+                    </div>
+                  `).join('')}
+                </nav>
+                <div class="sidebar-footer">
+                  <div class="user-info">
+                    <div class="user-avatar">${user.name.charAt(0)}</div>
+                    <span>${user.name}</span>
+                  </div>
+                  <div style="margin-top:0.4rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+                    <span class="badge-sm">${Store.getRoleLabel(role)}</span>
+                    <span class="badge-sm clickable" id="logoutBtn" style="color:var(--danger);">Logout</span>
+                  </div>
+                </div>
+              </aside>
+
+              <!-- Main -->
+              <main class="main">
+                <header class="topbar">
+                  <div class="topbar-left">
+                    <h2>${getPageTitle()}</h2>
+                  </div>
+                  <div class="topbar-right">
+                    <div class="notification-bell" id="notificationBell">
+                      <i class="fa-regular fa-bell"></i>
+                      ${Store.notifications.filter(n=>!n.read && n.userId===user.id).length > 0 ? `<span class="badge">${Store.notifications.filter(n=>!n.read && n.userId===user.id).length}</span>` : ''}
+                    </div>
+                    <span class="role-tag">${Store.getRoleLabel(role)}</span>
+                  </div>
+                </header>
+                <div class="page-content">
+                  ${renderPageContent()}
+                </div>
+              </main>
+            </div>
+            ${modalContent ? renderModalHTML() : ''}
+          `;
+        }
+
+        function getPageTitle() {
+            const map = {
+                dashboard: 'Dashboard',
+                org: 'Organization Setup',
+                assets: 'Asset Directory',
+                allocations: 'Allocations & Transfers',
+                bookings: 'Resource Bookings',
+                maintenance: 'Maintenance Management',
+                audits: 'Asset Audits',
+                reports: 'Reports & Analytics',
+                logs: 'Activity Logs'
+            };
+            return map[currentPage] || 'Dashboard';
+        }
+
+        function renderPageContent() {
+            switch (currentPage) {
+                case 'dashboard':
+                    return renderDashboard();
+                case 'org':
+                    return renderOrgSetup();
+                case 'assets':
+                    return renderAssets();
+                case 'allocations':
+                    return renderAllocations();
+                case 'bookings':
+                    return renderBookings();
+                case 'maintenance':
+                    return renderMaintenance();
+                case 'audits':
+                    return renderAudits();
+                case 'reports':
+                    return renderReports();
+                case 'logs':
+                    return renderLogs();
+                default:
+                    return '<p>Page coming soon...</p>';
+            }
+        }
+
+        // ----- DASHBOARD -----
+        function renderDashboard() {
+            const user = Store.currentUser;
+            const allAssets = Store.assets;
+            const available = allAssets.filter(a => a.status === 'Available').length;
+            const allocated = allAssets.filter(a => a.status === 'Allocated').length;
+            const maintenanceToday = Store.maintenance.filter(m => m.status === 'Pending' || m.status === 'In Progress')
+            .length;
+            const activeBookings = Store.bookings.filter(b => b.status === 'Upcoming' || b.status === 'Ongoing').length;
+            const overdueReturns = allAssets.filter(a => a.status === 'Allocated' && a.expectedReturnDate && new Date(a
+                .expectedReturnDate) < new Date()).length;
+
+            // My assets
+            const myAssets = allAssets.filter(a => a.holderId === user.id && a.status === 'Allocated');
+
+            // Notifications for this user
+            const myNotifs = Store.notifications.filter(n => n.userId === user.id && !n.read).slice(0, 5);
+
+            return `
+            <!-- KPI -->
+            <div class="kpi-grid">
+              <div class="kpi-card"><div class="kpi-label">Assets Available</div><div class="kpi-value">${available}</div></div>
+              <div class="kpi-card"><div class="kpi-label">Assets Allocated</div><div class="kpi-value">${allocated}</div></div>
+              <div class="kpi-card warning"><div class="kpi-label">Maintenance Today</div><div class="kpi-value">${maintenanceToday}</div></div>
+              <div class="kpi-card success"><div class="kpi-label">Active Bookings</div><div class="kpi-value">${activeBookings}</div></div>
+              <div class="kpi-card danger"><div class="kpi-label">Overdue Returns</div><div class="kpi-value">${overdueReturns}</div></div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+              <button class="btn btn-primary" onclick="openModal('registerAsset')"><i class="fa-solid fa-plus"></i> Register Asset</button>
+              <button class="btn btn-outline" onclick="openModal('bookResource')"><i class="fa-solid fa-calendar-plus"></i> Book Resource</button>
+              <button class="btn btn-outline" onclick="openModal('raiseMaintenance')"><i class="fa-solid fa-tools"></i> Raise Maintenance</button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+              <!-- My Assets -->
+              <div class="panel">
+                <div class="panel-header"><h3>My Assets</h3><span class="subtitle">${myAssets.length} items</span></div>
+                ${myAssets.length === 0 ? '<p class="text-muted text-sm">No assets allocated to you.</p>' : `
+                  <div class="table-wrap">
+                    <table>
+                      <tr><th>Asset</th><th>Tag</th><th>Status</th></tr>
+                      ${myAssets.map(a => `<tr><td>${a.name}</td><td>${a.assetTag}</td><td><span class="status-badge ${Store.getStatusBadge(a.status)}">${a.status}</span></td></tr>`).join('')}
+                    </table>
+                  </div>
+                `}
+              </div>
+
+              <!-- Recent Notifications -->
+              <div class="panel">
+                <div class="panel-header"><h3>Notifications</h3><span class="subtitle">${myNotifs.filter(n=>!n.read).length} unread</span></div>
+                ${myNotifs.length === 0 ? '<p class="text-muted text-sm">All caught up!</p>' : `
+                  <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                    ${myNotifs.map(n => `
+                      <div style="display:flex;gap:0.6rem;align-items:start;padding:0.4rem 0;border-bottom:1px solid var(--gray-100);">
+                        <i class="fa-solid fa-circle" style="font-size:0.5rem;color:${n.type === 'warning' ? 'var(--warning)' : n.type === 'success' ? 'var(--success)' : 'var(--accent)'};margin-top:0.4rem;"></i>
+                        <span style="font-size:0.9rem;">${n.message}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                `}
+                <div style="margin-top:0.8rem;">
+                  <button class="btn btn-outline" style="font-size:0.8rem;padding:0.3rem 0.8rem;" onclick="markAllRead()">Mark all as read</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        // ----- ORGANIZATION SETUP (Admin only) -----
+        function renderOrgSetup() {
+            if (Store.currentUser.role !== 'admin') {
+                return '<div class="panel"><p class="text-muted">Admin access required.</p></div>';
+            }
+            return `
+            <div class="panel">
+              <div class="tabs">
+                <div class="tab ${selectedTab === 'departments' ? 'active' : ''}" data-tab="departments">Departments</div>
+                <div class="tab ${selectedTab === 'categories' ? 'active' : ''}" data-tab="categories">Asset Categories</div>
+                <div class="tab ${selectedTab === 'employees' ? 'active' : ''}" data-tab="employees">Employee Directory</div>
+              </div>
+              <div class="tab-content ${selectedTab === 'departments' ? 'active' : ''}" id="tab-departments">
+                ${renderDepartments()}
+              </div>
+              <div class="tab-content ${selectedTab === 'categories' ? 'active' : ''}" id="tab-categories">
+                ${renderCategories()}
+              </div>
+              <div class="tab-content ${selectedTab === 'employees' ? 'active' : ''}" id="tab-employees">
+                ${renderEmployees()}
+              </div>
+            </div>
+          `;
+        }
+
+        function renderDepartments() {
+            const depts = Store.departments;
+            return `
+            <div class="flex-between">
+              <h4>Departments</h4>
+              <button class="btn btn-primary" onclick="openModal('addDepartment')"><i class="fa-solid fa-plus"></i> Add Department</button>
+            </div>
+            <div class="table-wrap mt-2">
+              <table>
+                <tr><th>Name</th><th>Head</th><th>Parent</th><th>Status</th><th>Actions</th></tr>
+                ${depts.map(d => `
+                  <tr>
+                    <td><strong>${d.name}</strong></td>
+                    <td>${d.headId ? Store.getUser(d.headId)?.name || '—' : '—'}</td>
+                    <td>${d.parentId ? Store.getDepartment(d.parentId)?.name || '—' : '—'}</td>
+                    <td><span class="status-badge ${d.status === 'Active' ? 'available' : 'retired'}">${d.status}</span></td>
+                    <td><button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="editDepartment('${d.id}')">Edit</button></td>
+                  </tr>
+                `).join('')}
+              </table>
+            </div>
+          `;
+        }
+
+        function renderCategories() {
+            const cats = Store.categories;
+            return `
+            <div class="flex-between">
+              <h4>Asset Categories</h4>
+              <button class="btn btn-primary" onclick="openModal('addCategory')"><i class="fa-solid fa-plus"></i> Add Category</button>
+            </div>
+            <div class="table-wrap mt-2">
+              <table>
+                <tr><th>Name</th><th>Custom Fields</th><th>Actions</th></tr>
+                ${cats.map(c => `
+                  <tr>
+                    <td><strong>${c.name}</strong></td>
+                    <td>${c.customFields?.length ? c.customFields.join(', ') : '—'}</td>
+                    <td><button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="editCategory('${c.id}')">Edit</button></td>
+                  </tr>
+                `).join('')}
+              </table>
+            </div>
+          `;
+        }
+
+        function renderEmployees() {
+            const users = Store.users;
+            return `
+            <div class="flex-between">
+              <h4>Employee Directory</h4>
+              <button class="btn btn-primary" onclick="openModal('addEmployee')"><i class="fa-solid fa-plus"></i> Add Employee</button>
+            </div>
+            <div class="table-wrap mt-2">
+              <table>
+                <tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Status</th><th>Actions</th></tr>
+                ${users.map(u => `
+                  <tr>
+                    <td><strong>${u.name}</strong></td>
+                    <td>${u.email}</td>
+                    <td>${u.departmentId ? Store.getDepartment(u.departmentId)?.name || '—' : '—'}</td>
+                    <td><span class="badge-sm">${Store.getRoleLabel(u.role)}</span></td>
+                    <td><span class="status-badge ${u.status === 'Active' ? 'available' : 'retired'}">${u.status}</span></td>
+                    <td>
+                      <button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="editEmployee('${u.id}')">Edit</button>
+                      ${u.role !== 'admin' ? `<button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--accent);" onclick="promoteEmployee('${u.id}')">Promote</button>` : ''}
+                    </td>
+                  </tr>
+                `).join('')}
+              </table>
+            </div>
+          `;
+        }
+
+        // ----- ASSETS -----
+        function renderAssets() {
+            const assets = Store.assets;
+            return `
+            <div class="panel">
+              <div class="flex-between">
+                <h3>Asset Directory</h3>
+                <button class="btn btn-primary" onclick="openModal('registerAsset')"><i class="fa-solid fa-plus"></i> Register Asset</button>
+              </div>
+              <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin:1rem 0;">
+                <input placeholder="Search by name, tag, serial..." style="flex:1;min-width:180px;padding:0.4rem 0.8rem;border:1px solid var(--gray-300);border-radius:6px;" id="assetSearch" oninput="filterAssets()" />
+                <select id="assetStatusFilter" onchange="filterAssets()" style="padding:0.4rem 0.8rem;border:1px solid var(--gray-300);border-radius:6px;">
+                  <option value="">All Status</option>
+                  <option value="Available">Available</option>
+                  <option value="Allocated">Allocated</option>
+                  <option value="Reserved">Reserved</option>
+                  <option value="Under Maintenance">Under Maintenance</option>
+                  <option value="Lost">Lost</option>
+                  <option value="Retired">Retired</option>
+                  <option value="Disposed">Disposed</option>
+                </select>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <tr><th>Asset</th><th>Tag</th><th>Category</th><th>Status</th><th>Holder</th><th>Location</th><th>Actions</th></tr>
+                  ${assets.map(a => `
+                    <tr>
+                      <td><strong>${a.name}</strong></td>
+                      <td>${a.assetTag}</td>
+                      <td>${Store.getCategory(a.categoryId)?.name || '—'}</td>
+                      <td><span class="status-badge ${Store.getStatusBadge(a.status)}">${a.status}</span></td>
+                      <td>${a.holderId ? Store.getUser(a.holderId)?.name || '—' : '—'}</td>
+                      <td>${a.location || '—'}</td>
+                      <td>
+                        <button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="viewAsset('${a.id}')">View</button>
+                        ${a.status === 'Available' ? `<button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--accent);" onclick="openModal('allocateAsset','${a.id}')">Allocate</button>` : ''}
+                      </td>
+                    </tr>
+                  `).join('')}
+                </table>
+              </div>
+            </div>
+          `;
+        }
+
+        // ----- ALLOCATIONS -----
+        function renderAllocations() {
+            const user = Store.currentUser;
+            const isAdminOrMgr = user.role === 'admin' || user.role === 'asset_manager';
+            const allocations = Store.assets.filter(a => a.status === 'Allocated' || a.status === 'Reserved');
+            return `
+            <div class="panel">
+              <h3>Asset Allocations & Transfers</h3>
+              <p class="text-muted text-sm">Manage who holds what. Overdue returns are flagged.</p>
+              <div class="table-wrap mt-2">
+                <table>
+                  <tr><th>Asset</th><th>Holder</th><th>Department</th><th>Expected Return</th><th>Status</th><th>Actions</th></tr>
+                  ${allocations.map(a => {
+                    const overdue = a.expectedReturnDate && new Date(a.expectedReturnDate) < new Date();
+                    return `<tr>
+                      <td><strong>${a.name}</strong> <span class="badge-sm">${a.assetTag}</span></td>
+                      <td>${a.holderId ? Store.getUser(a.holderId)?.name || '—' : '—'}</td>
+                      <td>${a.departmentId ? Store.getDepartment(a.departmentId)?.name || '—' : '—'}</td>
+                      <td>${a.expectedReturnDate || '—'} ${overdue ? '<span class="status-badge danger" style="font-size:0.6rem;">OVERDUE</span>' : ''}</td>
+                      <td><span class="status-badge ${Store.getStatusBadge(a.status)}">${a.status}</span></td>
+                      <td>
+                        ${a.status === 'Allocated' ? `<button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="openModal('returnAsset','${a.id}')">Return</button>` : ''}
+                        ${a.status === 'Allocated' && isAdminOrMgr ? `<button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--accent);" onclick="openModal('transferAsset','${a.id}')">Transfer</button>` : ''}
+                      </td>
+                    </tr>`;
+                  }).join('')}
+                </table>
+              </div>
+            </div>
+          `;
+        }
+
+        // ----- BOOKINGS -----
+        function renderBookings() {
+            const bookings = Store.bookings;
+            const resources = Store.assets.filter(a => a.isShared);
+            return `
+            <div class="panel">
+              <div class="flex-between">
+                <h3>Resource Bookings</h3>
+                <button class="btn btn-primary" onclick="openModal('bookResource')"><i class="fa-solid fa-plus"></i> Book Resource</button>
+              </div>
+              <div class="table-wrap mt-2">
+                <table>
+                  <tr><th>Resource</th><th>Booked By</th><th>Start</th><th>End</th><th>Status</th><th>Actions</th></tr>
+                  ${bookings.map(b => {
+                    const asset = Store.getAsset(b.assetId);
+                    return `<tr>
+                      <td>${asset ? asset.name : '—'}</td>
+                      <td>${Store.getUser(b.bookedBy)?.name || '—'}</td>
+                      <td>${new Date(b.start).toLocaleString()}</td>
+                      <td>${new Date(b.end).toLocaleString()}</td>
+                      <td><span class="status-badge ${b.status === 'Upcoming' ? 'pending' : b.status === 'Completed' ? 'completed' : b.status === 'Cancelled' ? 'retired' : 'available'}">${b.status}</span></td>
+                      <td>
+                        ${b.status === 'Upcoming' ? `<button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--danger);" onclick="cancelBooking('${b.id}')">Cancel</button>` : ''}
+                      </td>
+                    </tr>`;
+                  }).join('')}
+                </table>
+              </div>
+            </div>
+          `;
+        }
+
+        // ----- MAINTENANCE -----
+        function renderMaintenance() {
+            const maint = Store.maintenance;
+            return `
+            <div class="panel">
+              <div class="flex-between">
+                <h3>Maintenance Requests</h3>
+                <button class="btn btn-primary" onclick="openModal('raiseMaintenance')"><i class="fa-solid fa-plus"></i> Raise Request</button>
+              </div>
+              <div class="table-wrap mt-2">
+                <table>
+                  <tr><th>Asset</th><th>Issue</th><th>Priority</th><th>Status</th><th>Assigned To</th><th>Actions</th></tr>
+                  ${maint.map(m => {
+                    const asset = Store.getAsset(m.assetId);
+                    return `<tr>
+                      <td>${asset ? asset.name : '—'}</td>
+                      <td>${m.issue}</td>
+                      <td><span class="badge-sm" style="background:${m.priority === 'High' ? '#fce4ec' : '#fef3c7'};color:${m.priority === 'High' ? '#b91c1c' : '#b45309'};">${m.priority}</span></td>
+                      <td><span class="status-badge ${m.status === 'Pending' ? 'pending' : m.status === 'Approved' ? 'available' : m.status === 'Rejected' ? 'retired' : m.status === 'Resolved' ? 'completed' : 'maintenance'}">${m.status}</span></td>
+                      <td>${m.assignedTo ? Store.getUser(m.assignedTo)?.name || '—' : '—'}</td>
+                      <td>
+                        ${m.status === 'Pending' && (Store.currentUser.role === 'admin' || Store.currentUser.role === 'asset_manager') ? `
+                          <button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--success);" onclick="approveMaintenance('${m.id}')">Approve</button>
+                          <button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--danger);" onclick="rejectMaintenance('${m.id}')">Reject</button>
+                        ` : ''}
+                        ${m.status === 'Approved' ? `<button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--accent);" onclick="resolveMaintenance('${m.id}')">Resolve</button>` : ''}
+                      </td>
+                    </tr>`;
+                  }).join('')}
+                </table>
+              </div>
+            </div>
+          `;
+        }
+
+        // ----- AUDITS -----
+        function renderAudits() {
+            const audits = Store.audits;
+            return `
+            <div class="panel">
+              <div class="flex-between">
+                <h3>Audit Cycles</h3>
+                <button class="btn btn-primary" onclick="openModal('createAudit')"><i class="fa-solid fa-plus"></i> Create Audit</button>
+              </div>
+              <div class="table-wrap mt-2">
+                <table>
+                  <tr><th>Name</th><th>Scope</th><th>Auditors</th><th>Status</th><th>Actions</th></tr>
+                  ${audits.map(a => `
+                    <tr>
+                      <td><strong>${a.name}</strong></td>
+                      <td>${a.scope ? Store.getDepartment(a.scope)?.name || 'All' : 'All'}</td>
+                      <td>${a.auditors?.map(id => Store.getUser(id)?.name).join(', ') || '—'}</td>
+                      <td><span class="status-badge ${a.status === 'In Progress' ? 'pending' : 'completed'}">${a.status}</span></td>
+                      <td>
+                        ${a.status === 'In Progress' ? `<button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;color:var(--success);" onclick="closeAudit('${a.id}')">Close</button>` : ''}
+                        <button class="btn btn-outline" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="viewAudit('${a.id}')">View</button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </table>
+              </div>
+            </div>
+          `;
+        }
+
+        // ----- REPORTS -----
+        function renderReports() {
+            const assets = Store.assets;
+            const total = assets.length;
+            const available = assets.filter(a => a.status === 'Available').length;
+            const allocated = assets.filter(a => a.status === 'Allocated').length;
+            const maintenance = assets.filter(a => a.status === 'Under Maintenance').length;
+            const byCategory = {};
+            assets.forEach(a => {
+                const cat = Store.getCategory(a.categoryId);
+                const name = cat ? cat.name : 'Uncategorized';
+                byCategory[name] = (byCategory[name] || 0) + 1;
+            });
+            return `
+            <div class="panel">
+              <h3>Asset Utilization Summary</h3>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin:1rem 0;">
+                <div style="background:var(--gray-50);padding:1rem;border-radius:8px;"><span class="text-muted">Total Assets</span><div style="font-size:1.6rem;font-weight:700;">${total}</div></div>
+                <div style="background:var(--gray-50);padding:1rem;border-radius:8px;"><span class="text-muted">Available</span><div style="font-size:1.6rem;font-weight:700;color:var(--success);">${available}</div></div>
+                <div style="background:var(--gray-50);padding:1rem;border-radius:8px;"><span class="text-muted">Allocated</span><div style="font-size:1.6rem;font-weight:700;color:var(--accent);">${allocated}</div></div>
+                <div style="background:var(--gray-50);padding:1rem;border-radius:8px;"><span class="text-muted">Under Maintenance</span><div style="font-size:1.6rem;font-weight:700;color:var(--warning);">${maintenance}</div></div>
+              </div>
+              <h4 style="margin-top:1rem;">By Category</h4>
+              <div style="display:flex;flex-wrap:wrap;gap:0.8rem;">
+                ${Object.entries(byCategory).map(([name,count]) => `
+                  <span class="badge-sm" style="padding:0.3rem 0.8rem;background:var(--primary-light);">${name}: ${count}</span>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        // ----- LOGS -----
+        function renderLogs() {
+            const logs = Store.logs.slice(0, 50);
+            return `
+            <div class="panel">
+              <h3>Activity Logs</h3>
+              <div class="table-wrap mt-2">
+                <table>
+                  <tr><th>Time</th><th>User</th><th>Action</th></tr>
+                  ${logs.map(l => `
+                    <tr>
+                      <td>${new Date(l.timestamp).toLocaleString()}</td>
+                      <td>${l.userName}</td>
+                      <td>${l.action}</td>
+                    </tr>
+                  `).join('')}
+                  ${logs.length === 0 ? '<tr><td colspan="3" class="text-muted text-center">No logs yet.</td></tr>' : ''}
+                </table>
+              </div>
+            </div>
+          `;
+        }
+
+        // ----- MODAL SYSTEM -----
+        function renderModalHTML() {
+            if (!modalContent) return '';
+            return `
+            <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+              <div class="modal">
+                <h3>${modalContent.title}</h3>
+                ${modalContent.body}
+                <div class="modal-actions">${modalContent.actions}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        function renderModal() {
+            // handled by renderApp
+        }
+
+        window.openModal = function(type, param) {
+            const user = Store.currentUser;
+            const isAdmin = user.role === 'admin';
+            const isAssetMgr = user.role === 'asset_manager';
+            let body = '';
+            let actions = '';
+
+            switch (type) {
+                case 'registerAsset': {
+                    const categories = Store.categories;
+                    body = `
+                <div class="form-group"><label>Asset Name</label><input id="assetName" placeholder="e.g. MacBook Pro" /></div>
+                <div class="form-group"><label>Category</label>
+                  <select id="assetCategory">${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}</select>
+                </div>
+                <div class="form-row">
+                  <div class="form-group"><label>Serial Number</label><input id="assetSerial" placeholder="SN..." /></div>
+                  <div class="form-group"><label>Acquisition Date</label><input id="assetDate" type="date" /></div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group"><label>Cost (USD)</label><input id="assetCost" type="number" placeholder="0" /></div>
+                  <div class="form-group"><label>Location</label><input id="assetLocation" placeholder="Office A" /></div>
+                </div>
+                <div class="form-group"><label>Condition</label>
+                  <select id="assetCondition"><option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option></select>
+                </div>
+                <div class="form-group"><label><input type="checkbox" id="assetShared" /> This is a shared/bookable resource</label></div>
+                <div class="form-group"><label>Department (optional)</label>
+                  <select id="assetDept"><option value="">None</option>${Store.departments.filter(d=>d.status==='Active').map(d => `<option value="${d.id}">${d.name}</option>`).join('')}</select>
+                </div>
+              `;
+                    actions = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="registerAsset()">Register Asset</button>
+              `;
+                    break;
+                }
+                case 'allocateAsset': {
+                    const asset = Store.getAsset(param);
+                    if (!asset) { showToast('Asset not found', 'error'); return; }
+                    body = `
+                <p>Allocating <strong>${asset.name}</strong> (${asset.assetTag})</p>
+                <div class="form-group"><label>Employee</label>
+                  <select id="allocUser">${Store.users.filter(u=>u.status==='Active' && u.role!=='admin').map(u => `<option value="${u.id}">${u.name} (${u.email})</option>`).join('')}</select>
+                </div>
+                <div class="form-group"><label>Expected Return Date</label><input id="allocReturn" type="date" /></div>
+              `;
+                    actions = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="allocateAsset('${asset.id}')">Allocate</button>
+              `;
+                    break;
+                }
+                case 'returnAsset': {
+                    const asset = Store.getAsset(param);
+                    body = `
+                <p>Return <strong>${asset ? asset.name : ''}</strong></p>
+                <div class="form-group"><label>Condition Check-in Notes</label><textarea id="returnNotes" rows="2" placeholder="Any damage or issues?"></textarea></div>
+              `;
+                    actions = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="returnAsset('${param}')">Confirm Return</button>
+              `;
+                    break;
+                }
+                case 'transferAsset': {
+                    const asset = Store.getAsset(param);
+                    body = `
+                <p>Transfer <strong>${asset ? asset.name : ''}</strong> to another employee</p>
+                <div class="form-group"><label>New Holder</label>
+                  <select id="transferUser">${Store.users.filter(u=>u.status==='Active' && u.role!=='admin').map(u => `<option value="${u.id}">${u.name}</option>`).join('')}</select>
+                </div>
+              `;
+                    actions = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="transferAsset('${param}')">Request Transfer</button>
+              `;
+                    break;
+                }
+                case 'bookResource': {
+                    const resources = Store.assets.filter(a => a.isShared && a.status !== 'Under Maintenance');
+                    body = `
+                <div class="form-group"><label>Resource</label>
+                  <select id="bookResource">${resources.map(a => `<option value="${a.id}">${a.name} (${a.assetTag})</option>`).join('')}</select>
+                </div>
+                <div class="form-row">
+                  <div class="form-group"><label>Start</label><input id="bookStart" type="datetime-local" /></div>
+                  <div class="form-group"><label>End</label><input id="bookEnd" type="datetime-local" /></div>
+                </div>
+              `;
+                    actions = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="bookResource()">Book</button>
+              `;
+                    break;
+                }
+                case 'raiseMaintenance': {
+                    const assets = Store.assets.filter(a => a.status !== 'Retired' && a.status !== 'Disposed');
+                    body = `
+                <div class="form-group"><label>Asset</label>
+                  <select id="maintAsset">${assets.map(a => `<option value="${a.id}">${a.name} (${a.assetTag})</option>`).join('')}</select>
+                </div>
+                <div class="form-group"><label>Issue Description</label><textarea id="maintIssue" rows="2" placeholder="Describe the problem..."></textarea></div>
+                <div class="form-group"><label>Priority</label>
+                  <select id="maintPriority"><option>Low</option><option>Medium</option><option>High</option></select>
+                </div>
+              `;
+                    actions = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="raiseMaintenance()">Submit Request</button>
+              `;
+                    break;
+                }
+                case 'addDepartment': {
+                    body = `
+                <div class="form-group"><label>Department Name</label><input id="deptName" placeholder="e.g. HR" /></div>
+                <div class="form-group"><label>Parent Department</label>
+                  <select id="deptParent"><option value="">None</option>${Store.departments.map(d => `<option value="${d.id}">${d.name}</option>`).join('')}</select>
+                </div>
+              `;
+                    actions = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="addDepartment()">Create</button>
+              `;
+                    break;
+                }
+                case 'addCategory': {
+                    body = `
+                <div class="form-group"><label>Category Name</label><input id="catName" placeholder="e.g. Electronics" /></div>
+                <div class="form-group"><label>Custom Fields (comma separated)</label><input id="catFields" placeholder="warranty_period, serial_prefix" /></div>
+              `;
+                    actions = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="addCategory()">Create</button>
+              `;
+                    break;
+                }
+                case 'addEmployee': {
+                    body = `
+                <div class="form-group"><label>Full Name</label><input id="empName" placeholder="John Doe" /></div>
+                <div class="form-group"><label>Email</label><input id="empEmail" placeholder="john@company.com" /></div>
+                <div class="form-group"><label>Department</label>
+                  <select id="empDept">${Store.departments.filter(d=>d.status==='Active').map(d => `<option value="${d.id}">${d.name}</option>`).join('')}</select>
+                </div>
+                <div class="form-group"><label>Temporary Password</label><input id="empPass" type="password" placeholder="••••••••" /></div>
+              `;
+                    actions = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="addEmployee()">Create</button>
+              `;
+                    break;
+                }
+                case 'createAudit': {
+                    body = `
+                <div class="form-group"><label>Audit Name</label><input id="auditName" placeholder="Q4 Engineering Audit" /></div>
+                <div class="form-group"><label>Scope (Department)</label>
+                  <select id="auditScope"><option value="">All</option>${Store.departments.filter(d=>d.status==='Active').map(d => `<option value="${d.id}">${d.name}</option>`).join('')}</select>
+                </div>
+                <div class="form-row">
+                  <div class="form-group"><label>Start Date</label><input id="auditStart" type="date" /></div>
+                  <div class="form-group"><label>End Date</label><input id="auditEnd" type="date" /></div>
+                </div>
+                <div class="form-group"><label>Auditors (hold Ctrl to select multiple)</label>
+                  <select id="auditAuditors" multiple>${Store.users.filter(u=>u.status==='Active' && (u.role==='admin'||u.role==='asset_manager')).map(u => `<option value="${u.id}">${u.name}</option>`).join('')}</select>
+                </div>
+              `;
+                    actions = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="createAudit()">Create Audit</button>
+              `;
+                    break;
+                }
+                default:
+                    body = '<p>Unknown action.</p>';
+                    actions = `<button class="btn-secondary" onclick="closeModal()">Close</button>`;
+            }
+
+            modalContent = { title: getModalTitle(type), body, actions };
+            render();
+        };
+
+        function getModalTitle(type) {
+            const map = {
+                registerAsset: 'Register Asset',
+                allocateAsset: 'Allocate Asset',
+                returnAsset: 'Return Asset',
+                transferAsset: 'Transfer Asset',
+                bookResource: 'Book Resource',
+                raiseMaintenance: 'Raise Maintenance Request',
+                addDepartment: 'Add Department',
+                addCategory: 'Add Category',
+                addEmployee: 'Add Employee',
+                createAudit: 'Create Audit Cycle',
+            };
+            return map[type] || 'Action';
+        }
+
+        window.closeModal = function() {
+            modalContent = null;
+            render();
+        };
+
+        // ----- ACTION HANDLERS -----
+        window.registerAsset = function() {
+            const name = document.getElementById('assetName')?.value.trim();
+            const categoryId = document.getElementById('assetCategory')?.value;
+            const serial = document.getElementById('assetSerial')?.value.trim();
+            const date = document.getElementById('assetDate')?.value;
+            const cost = parseFloat(document.getElementById('assetCost')?.value) || 0;
+            const location = document.getElementById('assetLocation')?.value.trim();
+            const condition = document.getElementById('assetCondition')?.value;
+            const shared = document.getElementById('assetShared')?.checked || false;
+            const deptId = document.getElementById('assetDept')?.value || null;
+
+            if (!name) { showToast('Asset name is required', 'error'); return; }
+            const tag = `AF-${String(Store.assets.length + 1).padStart(4, '0')}`;
+            const asset = {
+                id: Store.nextId('a'),
+                name,
+                categoryId,
+                assetTag: tag,
+                serialNo: serial || '',
+                acquisitionDate: date || new Date().toISOString().slice(0, 10),
+                acquisitionCost: cost,
+                condition: condition || 'Good',
+                location: location || '',
+                status: 'Available',
+                isShared: shared,
+                departmentId: deptId,
+                holderId: null,
+                expectedReturnDate: null,
+                history: []
+            };
+            Store.assets.push(asset);
+            Store.addLog(Store.currentUser.id, `Registered asset ${name} (${tag})`);
+            Store.addNotification(Store.currentUser.id, `Asset ${name} registered successfully.`, 'success');
+            closeModal();
+            showToast(`Asset ${tag} registered`, 'success');
+            render();
+        };
+
+        window.allocateAsset = function(assetId) {
+            const userId = document.getElementById('allocUser')?.value;
+            const returnDate = document.getElementById('allocReturn')?.value;
+            if (!userId) { showToast('Select an employee', 'error'); return; }
+            const asset = Store.getAsset(assetId);
+            if (!asset) { showToast('Asset not found', 'error'); return; }
+            if (asset.status !== 'Available') { showToast('Asset is not available', 'error'); return; }
+            asset.holderId = userId;
+            asset.departmentId = Store.getUser(userId)?.departmentId || null;
+            asset.expectedReturnDate = returnDate || null;
+            asset.status = 'Allocated';
+            asset.history.push({ date: new Date().toISOString(), from: 'Available', to: 'Allocated',
+            note: `Allocated to ${Store.getUser(userId)?.name}` });
+            Store.addLog(Store.currentUser.id, `Allocated ${asset.name} to ${Store.getUser(userId)?.name}`);
+            Store.addNotification(userId, `Asset ${asset.name} allocated to you. Expected return: ${returnDate || 'Not set'}`,
+                'info');
+            closeModal();
+            showToast(`Allocated ${asset.name}`, 'success');
+            render();
+        };
+
+        window.returnAsset = function(assetId) {
+            const notes = document.getElementById('returnNotes')?.value || '';
+            const asset = Store.getAsset(assetId);
+            if (!asset) return;
+            const holder = asset.holderId;
+            asset.status = 'Available';
+            asset.holderId = null;
+            asset.expectedReturnDate = null;
+            asset.history.push({ date: new Date().toISOString(), from: 'Allocated', to: 'Available', note: notes ||
+                    'Returned' });
+            Store.addLog(Store.currentUser.id, `Returned ${asset.name} (${asset.assetTag})`);
+            if (holder) Store.addNotification(holder, `Asset ${asset.name} has been returned.`, 'info');
+            closeModal();
+            showToast(`${asset.name} returned`, 'success');
+            render();
+        };
+
+        window.transferAsset = function(assetId) {
+            const newHolderId = document.getElementById('transferUser')?.value;
+            if (!newHolderId) { showToast('Select a new holder', 'error'); return; }
+            const asset = Store.getAsset(assetId);
+            if (!asset) return;
+            const oldHolder = asset.holderId;
+            asset.holderId = newHolderId;
+            asset.departmentId = Store.getUser(newHolderId)?.departmentId || null;
+            asset.history.push({ date: new Date().toISOString(), from: 'Allocated', to: 'Allocated',
+                note: `Transferred to ${Store.getUser(newHolderId)?.name}` });
+            Store.addLog(Store.currentUser.id, `Transferred ${asset.name} to ${Store.getUser(newHolderId)?.name}`);
+            if (oldHolder) Store.addNotification(oldHolder, `Asset ${asset.name} transferred to ${Store.getUser(newHolderId)?.name}`,
+                'warning');
+            Store.addNotification(newHolderId, `Asset ${asset.name} transferred to you.`, 'info');
+            closeModal();
+            showToast(`Transferred ${asset.name}`, 'success');
+            render();
+        };
+
+        window.bookResource = function() {
+            const assetId = document.getElementById('bookResource')?.value;
+            const start = document.getElementById('bookStart')?.value;
+            const end = document.getElementById('bookEnd')?.value;
+            if (!assetId || !start || !end) { showToast('All fields required', 'error'); return; }
+            if (new Date(start) >= new Date(end)) { showToast('End time must be after start', 'error'); return; }
+
+            // Check overlap
+            const overlap = Store.bookings.some(b => {
+                if (b.assetId !== assetId) return false;
+                if (b.status === 'Cancelled' || b.status === 'Completed') return false;
+                const bStart = new Date(b.start);
+                const bEnd = new Date(b.end);
+                const reqStart = new Date(start);
+                const reqEnd = new Date(end);
+                return (reqStart < bEnd && reqEnd > bStart);
+            });
+            if (overlap) { showToast('Time slot overlaps with existing booking', 'error'); return; }
+
+            const booking = {
+                id: Store.nextId('b'),
+                assetId,
+                bookedBy: Store.currentUser.id,
+                start,
+                end,
+                status: 'Upcoming',
+                createdAt: new Date().toISOString()
+            };
+            Store.bookings.push(booking);
+            Store.addLog(Store.currentUser.id, `Booked ${Store.getAsset(assetId)?.name} for ${new Date(start).toLocaleString()}`);
+            Store.addNotification(Store.currentUser.id,
+                `Booking confirmed for ${Store.getAsset(assetId)?.name} at ${new Date(start).toLocaleString()}`, 'success');
+            closeModal();
+            showToast('Booking confirmed', 'success');
+            render();
+        };
+
+        window.cancelBooking = function(bookingId) {
+            const booking = Store.getBooking(bookingId);
+            if (!booking) return;
+            booking.status = 'Cancelled';
+            Store.addLog(Store.currentUser.id, `Cancelled booking for ${Store.getAsset(booking.assetId)?.name}`);
+            Store.addNotification(booking.bookedBy, `Booking for ${Store.getAsset(booking.assetId)?.name} cancelled.`,
+            'warning');
+            showToast('Booking cancelled', 'warning');
+            render();
+        };
+
+        window.raiseMaintenance = function() {
+            const assetId = document.getElementById('maintAsset')?.value;
+            const issue = document.getElementById('maintIssue')?.value.trim();
+            const priority = document.getElementById('maintPriority')?.value || 'Medium';
+            if (!assetId || !issue) { showToast('Asset and issue required', 'error'); return; }
+            const maint = {
+                id: Store.nextId('m'),
+                assetId,
+                requesterId: Store.currentUser.id,
+                issue,
+                priority,
+                status: 'Pending',
+                photo: null,
+                assignedTo: null,
+                createdAt: new Date().toISOString(),
+                resolvedAt: null
+            };
+            Store.maintenance.push(maint);
+            // Asset status not changed until approved
+            Store.addLog(Store.currentUser.id, `Raised maintenance for ${Store.getAsset(assetId)?.name}`);
+            Store.addNotification(Store.currentUser.id,
+                `Maintenance request submitted for ${Store.getAsset(assetId)?.name}`, 'info');
+            // Notify asset managers
+            Store.users.filter(u => u.role === 'asset_manager' || u.role === 'admin').forEach(u => {
+                Store.addNotification(u.id, `Maintenance request for ${Store.getAsset(assetId)?.name} pending approval.`,
+                    'warning');
+            });
+            closeModal();
+            showToast('Maintenance request submitted', 'success');
+            render();
+        };
+
+        window.approveMaintenance = function(maintId) {
+            const maint = Store.getMaintenance(maintId);
+            if (!maint) return;
+            maint.status = 'Approved';
+            const asset = Store.getAsset(maint.assetId);
+            if (asset) {
+                Store.transitionAsset(asset.id, 'Under Maintenance', 'Maintenance approved');
+            }
+            Store.addLog(Store.currentUser.id, `Approved maintenance for ${asset?.name}`);
+            Store.addNotification(maint.requesterId, `Maintenance request for ${asset?.name} approved.`, 'success');
+            showToast('Maintenance approved', 'success');
+            render();
+        };
+
+        window.rejectMaintenance = function(maintId) {
+            const maint = Store.getMaintenance(maintId);
+            if (!maint) return;
+            maint.status = 'Rejected';
+            Store.addLog(Store.currentUser.id, `Rejected maintenance for ${Store.getAsset(maint.assetId)?.name}`);
+            Store.addNotification(maint.requesterId, `Maintenance request for ${Store.getAsset(maint.assetId)?.name} rejected.`,
+                'error');
+            showToast('Maintenance rejected', 'error');
+            render();
+        };
+
+        window.resolveMaintenance = function(maintId) {
+            const maint = Store.getMaintenance(maintId);
+            if (!maint) return;
+            maint.status = 'Resolved';
+            maint.resolvedAt = new Date().toISOString();
+            const asset = Store.getAsset(maint.assetId);
+            if (asset) {
+                Store.transitionAsset(asset.id, 'Available', 'Maintenance resolved');
+            }
+            Store.addLog(Store.currentUser.id, `Resolved maintenance for ${asset?.name}`);
+            Store.addNotification(maint.requesterId, `Maintenance for ${asset?.name} resolved.`, 'success');
+            showToast('Maintenance resolved', 'success');
+            render();
+        };
+
+        // ----- ORG SETUP ACTIONS -----
+        window.addDepartment = function() {
+            const name = document.getElementById('deptName')?.value.trim();
+            const parentId = document.getElementById('deptParent')?.value || null;
+            if (!name) { showToast('Department name required', 'error'); return; }
+            Store.departments.push({ id: Store.nextId('d'), name, parentId, headId: null, status: 'Active' });
+            Store.addLog(Store.currentUser.id, `Added department ${name}`);
+            closeModal();
+            showToast(`Department ${name} created`, 'success');
+            render();
+        };
+
+        window.addCategory = function() {
+            const name = document.getElementById('catName')?.value.trim();
+            const fields = document.getElementById('catFields')?.value.split(',').map(s => s.trim()).filter(Boolean) || [];
+            if (!name) { showToast('Category name required', 'error'); return; }
+            Store.categories.push({ id: Store.nextId('c'), name, customFields: fields });
+            Store.addLog(Store.currentUser.id, `Added category ${name}`);
+            closeModal();
+            showToast(`Category ${name} created`, 'success');
+            render();
+        };
+
+        window.addEmployee = function() {
+            const name = document.getElementById('empName')?.value.trim();
+            const email = document.getElementById('empEmail')?.value.trim();
+            const deptId = document.getElementById('empDept')?.value;
+            const password = document.getElementById('empPass')?.value.trim() || 'temp123';
+            if (!name || !email) { showToast('Name and email required', 'error'); return; }
+            if (Store.users.find(u => u.email === email)) { showToast('Email already exists', 'error'); return; }
+            Store.users.push({
+                id: Store.nextId('u'),
+                name,
+                email,
+                password,
+                role: 'employee',
+                departmentId: deptId,
+                status: 'Active'
+            });
+            Store.addLog(Store.currentUser.id, `Added employee ${name}`);
+            closeModal();
+            showToast(`Employee ${name} created`, 'success');
+            render();
+        };
+
+        window.promoteEmployee = function(userId) {
+            const user = Store.getUser(userId);
+            if (!user) return;
+            const roles = ['employee', 'dept_head', 'asset_manager'];
+            const currentIdx = roles.indexOf(user.role);
+            const nextRole = roles[(currentIdx + 1) % roles.length];
+            user.role = nextRole;
+            Store.addLog(Store.currentUser.id, `Promoted ${user.name} to ${Store.getRoleLabel(nextRole)}`);
+            Store.addNotification(userId, `You have been promoted to ${Store.getRoleLabel(nextRole)}.`, 'success');
+            showToast(`${user.name} promoted to ${Store.getRoleLabel(nextRole)}`, 'success');
+            render();
+        };
+
+        window.createAudit = function() {
+            const name = document.getElementById('auditName')?.value.trim();
+            const scope = document.getElementById('auditScope')?.value || null;
+            const start = document.getElementById('auditStart')?.value;
+            const end = document.getElementById('auditEnd')?.value;
+            const auditors = Array.from(document.getElementById('auditAuditors')?.selectedOptions || []).map(o => o.value);
+            if (!name) { showToast('Audit name required', 'error'); return; }
+            Store.audits.push({
+                id: Store.nextId('aud'),
+                name,
+                scope,
+                dateRange: [start, end],
+                auditors,
+                status: 'In Progress',
+                items: []
+            });
+            Store.addLog(Store.currentUser.id, `Created audit ${name}`);
+            closeModal();
+            showToast(`Audit ${name} created`, 'success');
+            render();
+        };
+
+        window.closeAudit = function(auditId) {
+            const audit = Store.audits.find(a => a.id === auditId);
+            if (!audit) return;
+            audit.status = 'Closed';
+            Store.addLog(Store.currentUser.id, `Closed audit ${audit.name}`);
+            showToast(`Audit ${audit.name} closed`, 'success');
+            render();
+        };
+
+        window.markAllRead = function() {
+            const user = Store.currentUser;
+            Store.notifications.forEach(n => { if (n.userId === user.id) n.read = true; });
+            render();
+        };
+
+        // ----- NAVIGATION -----
+        function attachAppEvents() {
+            // Nav items
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.addEventListener('click', () => {
+                    currentPage = el.dataset.page;
+                    modalContent = null;
+                    render();
+                });
+            });
+
+            // Tabs in org
+            document.querySelectorAll('.tab').forEach(el => {
+                el.addEventListener('click', () => {
+                    selectedTab = el.dataset.tab;
+                    render();
+                });
+            });
+
+            // Logout
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    Store.currentUser = null;
+                    modalContent = null;
+                    render();
+                    showToast('Logged out', 'info');
+                });
+            }
+
+            // Notification bell
+            const bell = document.getElementById('notificationBell');
+            if (bell) {
+                bell.addEventListener('click', () => {
+                    // Toggle notifications view - just mark as read on click for simplicity
+                    const user = Store.currentUser;
+                    Store.notifications.forEach(n => { if (n.userId === user.id) n.read = true; });
+                    render();
+                    showToast('Notifications marked as read', 'info');
+                });
+            }
+        }
+
+        // ----- FILTER ASSETS -----
+        window.filterAssets = function() {
+            // Simple re-render with filter - we'll just re-render the whole page
+            render();
+        };
+
+        // ----- MISC VIEWS -----
+        window.viewAsset = function(assetId) {
+            const asset = Store.getAsset(assetId);
+            if (!asset) return;
+            const history = asset.history || [];
+            showToast(`Asset: ${asset.name} | Status: ${asset.status} | History: ${history.length} events`, 'info');
+        };
+
+        window.viewAudit = function(auditId) {
+            const audit = Store.audits.find(a => a.id === auditId);
+            if (!audit) return;
+            showToast(`Audit: ${audit.name} | Status: ${audit.status} | Auditors: ${audit.auditors?.length || 0}`, 'info');
+        };
+
+        window.editDepartment = function(id) {
+            showToast('Edit department functionality - inline editing coming soon', 'info');
+        };
+        window.editCategory = function(id) {
+            showToast('Edit category functionality - inline editing coming soon', 'info');
+        };
+        window.editEmployee = function(id) {
+            showToast('Edit employee functionality - inline editing coming soon', 'info');
+        };
+
+        // ------------------------------------------------
+        //  INIT
+        // ------------------------------------------------
+        render();
+    </script>
+</body>
+</html>
