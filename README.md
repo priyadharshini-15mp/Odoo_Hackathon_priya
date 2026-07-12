@@ -95,7 +95,8 @@ AssetFlow is an enterprise-grade asset and resource management system designed t
   logs: [],           // Activity audit trail
   currentUserId: null // Active session
 }
-developed by:
+
+## developed by:
 Priyadharshini S
 Ragavarshini G
 Raguram
